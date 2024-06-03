@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<section>
+		
+		<!-- Search Bar -->
+		<div class="container-fluid bg-primary p-5 mt-5 ">
+			<div class="row">
+				<div class="col-md-8 offset-md-2">
+					<form>
+						<div class="input-group">
+							<input type="text" class="form-control" name="ch">
+							<button class="btn btn-light text-dark ms-3 col-md-2"><i class="fa-solid fa-magnifying-glass"></i> Search </button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+        
+		<!-- Product and Category -->
+		<div class="container-fluid mt-1">
+			<div class="row">
+				
+                <!-- left category choose option -->
+				<div class="col-md-2 p-0">
+					<div class="card shadow-sm p-0 mb-5 bg-body-tertiary rounded">
+						<div class="card-body">
+							<!-- search for list group in bootstrap --> 
+							<div class="list-group">
+								<p class="fs-5">Category</p>
+								<a href="/products" th:classappend="${paramValue==''} ? 'active':''" 
+								   class="list-group-item list-group-item-action" aria-current="true"> All </a> 
+<!--
+href="/products": this link shows all products without any category filter.
+th:classappend="${paramValue==''} ? 'active':''": conditionally appends the active class to the a tag if paramValue is an empty string ('').
+	${paramValue==''}: Checks if the paramValue is empty.
+	'active':'': If the condition is true, appends active; otherwise, appends nothing.
+-->								   	
+								<a th:each="c:${categories}"
+								   th:href="@{'/products?category='+${c.name}}"
+								   th:classappend="${paramValue == c.name} ? 'active':''"
+								   class="list-group-item list-group-item-action">[[${c.name}]]</a>								   
+<!--  
+th:each="c:${categories}": iterates over a collection called categories. For each item in the collection, it creates a new 'a' tag.
+c: Represents the current category in the iteration. 
+${categories}: Refers to the collection of categories passed to the template.
+th:href="@{'/products?category='+${c.name}}": Constructs the href attribute dynamically.
+@{'/products?category='+${c.name}}: Generates a URL with a query parameter category set to the name of the current category (${c.name}).
+th:classappend="${paramValue == c.name} ? 'active':''": appends the active class if the paramValue matches the current category's name (${c.name}).
+${c.name}: Inserts the name of the current category as the text content of the 'a' tag
+-->
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!-- right products display -->
+				<div class="col-md-10">
+					<div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
+						<div class="card-body">
+							<p class="fs-3 text-center">Products</p>
+							<div class="row">
+								
+								<!-- checks if products collection as items -->
+								<th:block th:if="${products.size >0}">
+									<div class="col-md-3" th:each="p:${products}">
+										<div class="card">
+											<div class="card-body ">
+												<img alt="" th:src="@{'/img/product_img/'+${p.image}}" width="100%" height="150px">
+												<p class="fs-5 text-center">[[${p.title}]]</p>
+												<div class="row text-center">
+													<p class="fs-6 fw-bold ">
+														<span>&#8377; [[${p.discountPrice}]]</span> <br> 
+														<span class="text-decoration-line-through text-secondary">&#8377;
+															[[${p.price}]]</span> <span class="fs-6 text-success">[[${p.discount}]]% off </span>
+													</p>
+													<a th:href="@{'/product/'+${p.id}}" class="btn btn-primary col-md-6 offset-md-3">View Details</a>
+												</div>
+											</div>
+										</div>
+									</div>
+<!--
+<div class="col-md-3" th:each="p:${products}">: For each product in the products collection, a column (col-md-3) is created, 
+making each product take up 3 columns out of 12 in the Bootstrap grid system.
+th:each="p:${products}": Iterates over the products collection, where p represents the current product.
+Product Card Content:
+		<div class="card"> and <div class="card-body">: Define the card structure using Bootstrap classes.
+		<img alt="" th:src="@{'/img/product_img/'+${p.image}}" width="100%" height="150px">: Displays the product image.
+					th:src="@{'/img/product_img/'+${p.image}}": Dynamically sets the src attribute to the product image URL.
+<p class="fs-5 text-center">p.title</p>: Displays the product title centered.
+Product Price and Discount:
+		span>&#8377; {p.discountPrice}</span>: Displays the discounted price.
+		<span class="text-decoration-line-through text-secondary">&#8377; {p.price}</span>: Displays the original price, struck through.
+	    <span class="fs-6 text-success">{p.discount}% off</span>: Displays the discount percentage.
+View Details Button:
+<a th:href="@{'/product/'+${p.id}}" class="btn btn-primary col-md-6 offset-md-3">View Details</a>: A button linking to the product details page.
+-->
+								</th:block>
+								
+								<!-- checks if products collection is empty -->
+								<th:block th:unless="${products.size>0}">
+								<p class="fs-4 text-center mt-4 text-danger">Product not available</p>
+								</th:block>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</section>
+</body>
+</html>
